@@ -1,0 +1,7 @@
+*.fastq.gz
+reference.fasta
+reference.gff
+data/
+results/
+work/
+.nextflow*
