@@ -10,8 +10,11 @@ From: mambaorg/micromamba:1.5.8
     Usage : apptainer exec deseq2_1.16.1.sif Rscript mon_script.R
 
 %post
+    # libgfortran=3.0.0 : R 3.4.1 a besoin de libgfortran.so.3 ;
+    # sans ce pin, conda installe libgfortran5 (trop récent) et R ne démarre pas
     micromamba install -y -p /opt/conda -c conda-forge -c bioconda -c r \
-        r-base=3.4.1 bioconductor-deseq2=1.16.1
+        r-base=3.4.1 bioconductor-deseq2=1.16.1 libgfortran=3.0.0
+
     micromamba clean -a -y
 
 %environment
