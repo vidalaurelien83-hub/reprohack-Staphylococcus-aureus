@@ -53,7 +53,7 @@ couleur <- ifelse(sig_nous & sig_auteurs, "red",
 pdf("comparison_log2FC.pdf", width = 6, height = 6)
 plot(m$log2FoldChange.auteurs, m$log2FoldChange.nous, pch = 20, cex = 0.5, col = couleur,
      xlab = "log2 fold change - auteurs (GEO)", ylab = "log2 fold change - nous",
-     main = "Persisters vs contrôles : nous vs auteurs")
+     main = "Persisters vs contrôles données de l'article vs données reproduites")
 abline(0, 1, lty = 2)   # diagonale = résultats identiques
 legend("topleft", c("DEG chez les deux", "DEG chez un seul", "non DEG"),
        col = c("red", "orange", "grey60"), pch = 20, bty = "n")
