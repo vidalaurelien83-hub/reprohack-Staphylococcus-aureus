@@ -126,7 +126,7 @@ process DESEQ2 {
     path samples
 
     output:
-    path "deseq2_results.tsv"
+    path "deseq2_results.tsv", emit: results
     path "MA_plot_all.pdf"
     path "deseq2_summary.txt"
 
@@ -136,6 +136,43 @@ process DESEQ2 {
     """
 }
 
+// Annotations pour la Fig. 3c :
+//  - hiérarchie KEGG BRITE de S. aureus NCTC 8325 (code "sao") -> gènes de la traduction
+//  - table AureoWiki NCTC 8325 -> noms courts des gènes (frr, infA, pth...)
+process DOWNLOAD_ANNOT {
+    storeDir "${params.datadir}/annotation"
+
+    output:
+    path "kegg_sao00001.keg",      emit: kegg
+    path "aureowiki_NCTC8325.tsv", emit: names
+
+    script:
+    """
+    wget -q -O kegg_sao00001.keg "https://rest.kegg.jp/get/br:sao00001"
+    wget -q -O aureowiki_NCTC8325.tsv \\
+        --post-data 'gsiStrainSelection%5B%5D=NCTC8325%3A0&gsiColumnSelection%5B%5D=pansymbol&gsiColumnSelection%5B%5D=product&includeLinesWithoutData=1&button=Download+as+Text+%28.tsv%29' \\
+        "https://aureowiki.med.uni-greifswald.de/extensions/AureoDownload/download.php"
+    """
+}
+
+// Fig. 3c : MA-plot des gènes de la traduction (script R : bin/ma_translation.R)
+process FIG3C {
+    publishDir "${params.outdir}/deseq2", mode: 'copy'
+
+    input:
+    path results
+    path kegg
+    path names
+
+    output:
+    path "MA_plot_translation.pdf"
+    path "translation_genes.tsv"
+
+    script:
+    """
+    Rscript ${projectDir}/bin/ma_translation.R ${results} ${kegg} ${names} | tee fig3c_summary.txt
+    """
+}
 
 
 workflow {
@@ -154,5 +191,8 @@ workflow {
 
     // Analyse différentielle à partir du tableau de comptages
     DESEQ2(COUNT.out.counts, file(params.design))
+    // Fig. 3c : gènes de la traduction (KEGG) + noms (AureoWiki)
+    annot = DOWNLOAD_ANNOT()
+    FIG3C(DESEQ2.out.results, annot.kegg, annot.names)
 
 }

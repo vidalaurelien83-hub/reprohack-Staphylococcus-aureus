@@ -7,3 +7,4 @@ work/
 .nextflow*
 images/
 *.sif
+figures_vm/
