@@ -1,0 +1,21 @@
+Bootstrap: docker
+From: mambaorg/micromamba:1.5.8
+
+%labels
+    Tool R + DESeq2
+    Version R 3.4.1 / DESeq2 1.16.1
+
+%help
+    R 3.4.1 et DESeq2 1.16.1, versions de l'article (analyse différentielle).
+    Usage : apptainer exec deseq2_1.16.1.sif Rscript mon_script.R
+
+%post
+    micromamba install -y -p /opt/conda -c conda-forge -c bioconda -c r \
+        r-base=3.4.1 bioconductor-deseq2=1.16.1
+    micromamba clean -a -y
+
+%environment
+    export PATH=/opt/conda/bin:$PATH
+
+%test
+    Rscript -e 'library(DESeq2); cat("DESeq2", as.character(packageVersion("DESeq2")), "\n")'

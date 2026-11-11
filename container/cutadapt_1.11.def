@@ -1,0 +1,23 @@
+Bootstrap: docker
+From: mambaorg/micromamba:1.5.8
+
+%labels
+    Tool cutadapt
+    Version 1.11
+    Source bioconda
+
+%help
+    cutadapt 1.11, version utilisée par Peyrusson et al. 2020 (trimming).
+    Usage : apptainer exec cutadapt_1.11.sif cutadapt --help
+
+%post
+    # cutadapt 1.11 date de 2016 : il faut un Python ancien (3.5)
+    micromamba install -y -p /opt/conda -c conda-forge -c bioconda \
+        python=3.5 cutadapt=1.11
+    micromamba clean -a -y
+
+%environment
+    export PATH=/opt/conda/bin:$PATH
+
+%test
+    cutadapt --version

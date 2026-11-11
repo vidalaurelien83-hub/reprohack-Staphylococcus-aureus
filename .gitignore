@@ -5,3 +5,5 @@ data/
 results/
 work/
 .nextflow*
+images/
+*.sif

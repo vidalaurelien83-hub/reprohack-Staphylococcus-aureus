@@ -1,0 +1,28 @@
+Bootstrap: docker
+From: debian:bookworm-slim
+
+%labels
+    Tool subread (featureCounts)
+    Version 1.4.6-p3
+
+%help
+    Subread 1.4.6-p3 (featureCounts), version de l'article, binaire officiel SourceForge.
+    Usage : apptainer exec subread_1.4.6-p3.sif featureCounts -v
+
+%post
+    apt-get update
+    apt-get install -y --no-install-recommends wget ca-certificates
+    cd /opt
+    wget -q -O subread.tar.gz \
+        "https://sourceforge.net/projects/subread/files/subread-1.4.6-p3/subread-1.4.6-p3-Linux-x86_64.tar.gz/download"
+    tar xzf subread.tar.gz
+    rm subread.tar.gz
+    apt-get purge -y wget
+    apt-get autoremove -y
+    rm -rf /var/lib/apt/lists/*
+
+%environment
+    export PATH=/opt/subread-1.4.6-p3-Linux-x86_64/bin:$PATH
+
+%test
+    featureCounts -v

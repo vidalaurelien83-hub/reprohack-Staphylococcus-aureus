@@ -1,0 +1,32 @@
+Bootstrap: docker
+From: debian:bookworm-slim
+
+%labels
+    Tool bowtie
+    Version 0.12.7
+    Extra samtools (Debian bookworm, 1.16)
+
+%help
+    Bowtie 0.12.7 (version de l'article, absente de Bioconda et Damona),
+    binaire officiel SourceForge + samtools pour trier/indexer les BAM.
+    Usage : apptainer exec bowtie_0.12.7.sif bowtie --version
+
+%post
+    apt-get update
+    apt-get install -y --no-install-recommends wget unzip ca-certificates samtools
+    cd /opt
+    wget -q -O bowtie.zip \
+        "https://sourceforge.net/projects/bowtie-bio/files/bowtie/0.12.7/bowtie-0.12.7-linux-x86_64.zip/download"
+    unzip bowtie.zip
+    rm bowtie.zip
+    # nettoyage pour réduire la taille de l'image
+    apt-get purge -y wget unzip
+    apt-get autoremove -y
+    rm -rf /var/lib/apt/lists/*
+
+%environment
+    export PATH=/opt/bowtie-0.12.7:$PATH
+
+%test
+    bowtie --version
+    samtools --version | head -1
