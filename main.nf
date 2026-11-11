@@ -117,6 +117,26 @@ process COUNT {
     """
 }
 
+// Analyse différentielle DESeq2 1.16 (script R : bin/deseq2.R)
+process DESEQ2 {
+    publishDir "${params.outdir}/deseq2", mode: 'copy'
+
+    input:
+    path counts
+    path samples
+
+    output:
+    path "deseq2_results.tsv"
+    path "MA_plot_all.pdf"
+    path "deseq2_summary.txt"
+
+    script:
+    """
+    Rscript ${projectDir}/bin/deseq2.R ${counts} ${samples} | tee deseq2_summary.txt
+    """
+}
+
+
 
 workflow {
     srr_ch   = Channel.fromList(params.samples)
@@ -131,4 +151,8 @@ workflow {
     // Comptage : on rassemble les 6 BAM en une seule liste
     bams_ch  = MAPPING.out.bam.map { srr, bam, bai -> bam }.collect()
     COUNT(bams_ch, genome.gff)
+
+    // Analyse différentielle à partir du tableau de comptages
+    DESEQ2(COUNT.out.counts, file(params.design))
+
 }
