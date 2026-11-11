@@ -21,4 +21,5 @@ From: mambaorg/micromamba:1.5.8
     export PATH=/opt/conda/bin:$PATH
 
 %test
-    Rscript -e 'library(DESeq2); cat("DESeq2", as.character(packageVersion("DESeq2")), "\n")'
+    R --version | head -1
+    Rscript -e 'suppressMessages(library(DESeq2))' -e 'packageVersion("DESeq2")'
