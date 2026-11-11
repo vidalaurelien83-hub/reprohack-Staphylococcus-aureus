@@ -1,0 +1,20 @@
+Bootstrap: docker
+From: debian:bookworm-slim
+
+%labels
+    Tool wget
+    Version 1.21.3 (Debian bookworm)
+
+%help
+    Image minimale pour les étapes de téléchargement du workflow
+    (lectures FASTQ depuis l'ENA, génome et annotation depuis le NCBI).
+    Usage : apptainer exec wget_1.21.3.sif wget --version
+
+%post
+    apt-get update
+    # procps fournit "ps", utilisé par Nextflow pour mesurer les ressources
+    apt-get install -y --no-install-recommends wget ca-certificates procps
+    rm -rf /var/lib/apt/lists/*
+
+%test
+    wget --version | head -1

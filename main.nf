@@ -20,7 +20,7 @@ process DOWNLOAD_FASTQ {
     script:
     def dir = "${srr[0..5]}/0${srr[-2..-1]}/${srr}"
     """
-    wget -q -O ${srr}.fastq.gz ftp://ftp.sra.ebi.ac.uk/vol1/fastq/${dir}/${srr}.fastq.gz
+    wget -q -O ${srr}.fastq.gz https://ftp.sra.ebi.ac.uk/vol1/fastq/${dir}/${srr}.fastq.gz
     """
 }
 
