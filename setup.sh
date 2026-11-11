@@ -7,6 +7,20 @@
 # =====================================================================
 set -euo pipefail
 
+echo "=== 0/4 Réseau (DNS) ==="
+# Sur le cloud IN2P3, les DNS fournis ne trouvent pas les miroirs Ubuntu
+# (archive.ubuntu.com) : on bascule alors sur des DNS publics.
+# Changement temporaire : après un redémarrage de la VM, relancer ce script.
+if getent hosts archive.ubuntu.com >/dev/null; then
+    echo "DNS OK"
+else
+    IFACE=$(ip route | awk '/default/ {print $5; exit}')
+    sudo resolvectl dns "$IFACE" 1.1.1.1 8.8.8.8
+    sudo resolvectl flush-caches
+    echo "DNS publics configurés sur $IFACE"
+fi
+
+
 echo "=== 1/4 Java 17 (requis par Nextflow) ==="
 if java -version 2>&1 | grep -qE 'version "(1[7-9]|2[0-9])'; then
     echo "Java déjà installé"
@@ -27,14 +41,20 @@ else
 fi
 
 echo "=== 3/4 Apptainer ==="
+# Installé depuis le .deb officiel sur GitHub : le PPA Launchpad
+# n'est pas joignable depuis le cloud (timeout sur api.launchpad.net).
+APPTAINER_VERSION=1.4.5
 if command -v apptainer >/dev/null 2>&1; then
     echo "Apptainer déjà installé"
 else
-    sudo apt install -y software-properties-common
-    sudo add-apt-repository -y ppa:apptainer/ppa
-    sudo apt update
-    sudo apt install -y apptainer
+    deb="apptainer_${APPTAINER_VERSION}_amd64.deb"
+    wget -q -O "/tmp/$deb" \
+        "https://github.com/apptainer/apptainer/releases/download/v${APPTAINER_VERSION}/$deb"
+    sudo apt update || true   # || true : ignore les dépôts tiers injoignables
+    sudo apt install -y "/tmp/$deb"
 fi
+
+
 
 echo "=== 4/4 Damona (via pipx) ==="
 if command -v pipx >/dev/null 2>&1; then
