@@ -55,7 +55,9 @@ process BOWTIE_INDEX {
     """
 }
 
-// Trimming cutadapt (-q 20 = hypothèse à justifier dans le rapport)
+// Trimming cutadapt : adaptateur TruSeq (-a), qualité (-q 20 = hypothèse),
+// longueur minimale 25 nt (-m 25, comme dans l'article)
+
 process TRIM {
     tag "$srr"
     publishDir "${params.outdir}/trimmed", mode: 'copy'
@@ -68,7 +70,7 @@ process TRIM {
 
     script:
     """
-    cutadapt -q 20 -m 25 -o ${srr}.trimmed.fastq.gz ${fastq}
+        cutadapt -a ${params.adapter} -q 20 -m 25 -o ${srr}.trimmed.fastq.gz ${fastq}
     """
 }
 
