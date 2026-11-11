@@ -174,6 +174,26 @@ process FIG3C {
     """
 }
 
+// Comparaison avec les résultats publiés par les auteurs (GEO GSE139659)
+process COMPARE {
+    publishDir "${params.outdir}/comparison", mode: 'copy'
+
+    input:
+    path results
+    path reference
+
+    output:
+    path "comparison_summary.txt"
+    path "comparison_log2FC.pdf"
+    path "comparison_discordant.tsv"
+
+    script:
+    """
+    Rscript ${projectDir}/bin/compare_reference.R ${results} ${reference} | tee comparison_summary.txt
+    """
+}
+
+
 
 workflow {
     srr_ch   = Channel.fromList(params.samples)
@@ -194,5 +214,8 @@ workflow {
     // Fig. 3c : gènes de la traduction (KEGG) + noms (AureoWiki)
     annot = DOWNLOAD_ANNOT()
     FIG3C(DESEQ2.out.results, annot.kegg, annot.names)
+    // Comparaison avec les résultats des auteurs
+    COMPARE(DESEQ2.out.results, file(params.reference))
+
 
 }
