@@ -27,3 +27,11 @@ bash run.sh
 Dans le terminal du PC : 
 
 scp ubuntu@<IP-DE-LA-VM>:~/reprohack-Staphylococcus-aureus/results/deseq2/*.pdf .
+
+
+## Résultats
+
+Figures obtenues avec ce workflow (copie de `results/deseq2/`) :
+- [figures/MA_plot_all.pdf](figures/MA_plot_all.pdf) 
+- [figures/MA_plot_translation.pdf](figures/MA_plot_translation.pdf)
+
