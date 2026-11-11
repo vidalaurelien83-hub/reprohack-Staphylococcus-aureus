@@ -3,10 +3,27 @@
 
 Le workflow est écrit avec **Nextflow** et chaque étape tourne dans un conteneur **Apptainer**, avec les versions d'outils de l'article.
 
-## Lancer l'analyse
+## Différentes étapes de l'exécution
 
-```bash
-bash setup.sh          # installe Java, Nextflow, Apptainer et Damona
-bash build_images.sh   # construit les images à partir des recettes de container/
-bash run.sh            # lance le workflow Nextflow
-```
+### Récupération du projet et installation des outils sur la machine virtuelle 
+
+git clone https://github.com/vidalaurelien83-hub/reprohack-Staphylococcus-aureus.git
+cd reprohack-Staphylococcus-aureus
+bash setup.sh
+
+exec bash
+cd ~/reprohack-Staphylococcus-aureus
+
+### Construire les images Apptainer
+
+bash build_images.sh
+
+### Lancer le workflow 
+
+bash run.sh
+
+### Récupération des figures
+
+Dans le terminal du PC : 
+
+scp ubuntu@<IP-DE-LA-VM>:~/reprohack-Staphylococcus-aureus/results/deseq2/*.pdf .
