@@ -8,10 +8,13 @@ Le workflow est écrit avec **Nextflow** et chaque étape tourne dans un contene
 ### Récupération du projet et installation des outils sur la machine virtuelle 
 
 git clone https://github.com/vidalaurelien83-hub/reprohack-Staphylococcus-aureus.git
+
 cd reprohack-Staphylococcus-aureus
+
 bash setup.sh
 
 exec bash
+
 cd ~/reprohack-Staphylococcus-aureus
 
 ### Construire les images Apptainer
